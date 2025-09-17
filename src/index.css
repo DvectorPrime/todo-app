@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@import "@fontsource/inter";
+
+.bg-checked:checked{
+    background-image: url("./assets/checked.png");
+}
