@@ -8,6 +8,8 @@ import othersIcon from "./assets/others.svg"
 import addTask from "./assets/Add task.svg"
 
 import TaskComponent from "./components/TaskComponent"
+import AddNewTask from "./components/NewTaskComponent"
+
 import type { groupItems, todoDataType } from "./appData/types/todoDataTypes"
 
 
@@ -58,6 +60,7 @@ function App() {
   
   return (
     <>
+      <AddNewTask />
       <main className='p-8'>
           <h2 className="sticky top-0 z-50 bg-white text-4xl tracking-tight pb-6.5"><span className="font-bold">Today </span><span className="font-medium opacity-20">26 Dec</span> </h2>
           <section className='w-full my-4 grid grid-cols-2 gap-3 items-center'> 

@@ -1,4 +1,0 @@
-lists = [0, 10, 20, 30, 40]
-convert_to_farenheit = map(lambda x: x * 1.8 + 35, lists)
-
-print(list(convert_to_farenheit))
