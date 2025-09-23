@@ -12,7 +12,7 @@ export default function TaskComponent({todo, todos, setTodos} : TaskComponentPro
     const subtasks = todo.subtasks
     const subtasksElements = subtasks?.map((subtask: subtaskType) => (<SubTaskComponent subTask={subtask} todo ={todo} todos={todos} setTodos={setTodos} />))
 
-    const themeColor: string = todo.completed ? "#666666" : todo.category == "health" ? "#7990F8" : todo.category == "work" ? "#46CF8B" : todo.category == "study" ? "#BC5EAD" : "#908986"
+    const themeColor: string = todo.completed ? "#666666" : todo.category.toLowerCase() == "health" ? "#7990F8" : todo.category.toLowerCase() == "study" ? "#46CF8B" : todo.category.toLowerCase() == "work" ? "#BC5EAD" : "#908986"
 
     function updateTodo() : void{
       console.log("happyy")
@@ -32,7 +32,7 @@ export default function TaskComponent({todo, todos, setTodos} : TaskComponentPro
         <label htmlFor={todo.id}>
           <span className={`block font-medium text-[17px] text-[121212] mb-2 text-[${todo.completed && "#666666"}]`}>{todo.task}</span>
           <div className="flex place-items-start">
-            <span className={`font-semibold text-[17px] text-[${themeColor}] tracking-tight bg-[${themeColor}]/10 px-1.5 py-1 mr-2 rounded-sm `}>{todo.category.toUpperCase()}</span>
+            <span className={`font-semibold text-[17px] text-[#${themeColor}] tracking-tight bg-[${themeColor}]/10 px-1.5 py-1 mr-2 rounded-sm `}>{todo.category.toUpperCase()}</span>
             {todo.timeDue && <span className="inline-flex gap-2 place-content-center font-semibold text-[17px] tracking-tight text-[#666666] bg-[#666666]/10 px-1.5 py-1 rounded-sm"> <img src={clock} alt="time-due" className=""/> {todo.timeDue?.toUpperCase()}</span>}
           </div>
         </label>

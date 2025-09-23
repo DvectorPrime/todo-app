@@ -13,47 +13,74 @@ function NewSubTask({newTask, subTaskIndex, handleChange} : NewSubTaskProps){
     return (
         <aside className="pl-7 grid grid-cols-[20px_1fr] gap-4.5 align-middle">
             <span className="inline-block w-6 h-6 border-2 border-[#D6D6D6] rounded-sm"></span>
-            <input type="text" name="subtask" id={`${newTask.id}-${Date.now()}-subTask`} placeholder="Add Subtask" className="focus:outline-none" onChange={handleChange} value={newTask.subtasks?.[subTaskIndex]?.subtask ?? ""}/>
+            <input type="text" name="subtask" id={newTask.subtasks?.[subTaskIndex]?.subId ?? ""} placeholder="Add Subtask" className="focus:outline-none" onChange={handleChange} value={newTask.subtasks?.[subTaskIndex]?.subtask ?? ""}/>
         </aside>
     )
 }
 
-export default function AddNewTask(){
+interface AddNewTaskProps{
+    setTodos: React.Dispatch<React.SetStateAction<todoDataType[]>>
+}
+
+export default function AddNewTask({setTodos} : AddNewTaskProps){
+    const initialId = `${Date.now()}vptask`;
     const [newTaskData, setNewTaskData] = useState<todoDataType>({
-        id: `${Date.now()}vptask`,
-            task: "",
-            category: "others",
-            subtasks: [
-                {
-                    subId: "",
-                    subtask: "",
-                    completed: false
-                }
-            ],
-            completed: false,
-            timeDue: null
-        })
-        
-    const [allSubtaskFilled, setAllSubtaskFilled] = useState<boolean>(true)
+        id: initialId,
+        task: "",
+        category: "others",
+        subtasks: [],
+        completed: false,
+        timeDue: null
+    })
+
+    const ranOnce = useRef(false)
 
     useEffect(() => {
-        if (newTaskData.subtasks) {
-            for (let i = 0; i < newTaskData.subtasks.length; i++) {
-                if (newTaskData.subtasks[i].subtask === "") {
-                    setAllSubtaskFilled(false)
-                }
+        if (ranOnce.current){return} 
+        
+        ranOnce.current = true
+
+        if (!newTaskData.subtasks) {
+            // if no subtasks yet, start with one blank
+            setNewTaskData(prev => ({
+            ...prev,
+            subtasks: [
+                {
+                subId: `${initialId}-${Date.now()}-subTask`,
+                subtask: "",
+                completed: false,
+                },
+            ],
+            }));
+            return;
+        }
+
+        // Check if all existing subtasks are filled
+        const allFilled = newTaskData.subtasks.every(st => st.subtask.trim() !== "");
+
+        if (allFilled) {
+            const last = newTaskData.subtasks[newTaskData.subtasks.length - 1];
+
+            if (!last || last.subtask.trim() !== "") {
+            // Only append if the last subtask isn’t already blank
+            setNewTaskData(prev => ({
+                ...prev,
+                subtasks: [
+                ...(prev.subtasks ?? []),
+                {
+                    subId: `${initialId}-${Date.now()}-subTask`,
+                    subtask: "",
+                    completed: false,
+                },
+                ],
+            }));
             }
         }
-          if (allSubtaskFilled && newTaskData && newTaskData.subtasks){
-            newTaskData.subtasks.push({
-            subId: "",
-            subtask: "",
-            completed: false
-            })
-        }
-    }, [newTaskData])
+        }, [newTaskData, initialId]);
+
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+        ranOnce.current = false
         const { name, value, tagName, id } = e.target;
         setNewTaskData(prev => {
             if (tagName === 'TEXTAREA') {
@@ -62,6 +89,7 @@ export default function AddNewTask(){
                     task: value
                 };
             } else if (name === "category") {
+                console.log("if this owrks")
                 return {
                     ...prev,
                     category: id.toLowerCase() as todoDataType["category"]
@@ -69,15 +97,21 @@ export default function AddNewTask(){
             } else if (name == "subtask"){
                 const holderSubTasksData = newTaskData.subtasks
 
-                if (holderSubTasksData?.length === 1) {
-                    holderSubTasksData[0].subId = id
-                    holderSubTasksData[0].subtask = value
+                const subTaskIndex = holderSubTasksData?.findIndex(subtask => subtask.subId === id);
+
+                if (subTaskIndex !== undefined && subTaskIndex !== -1 && holderSubTasksData) {
+                    const updatedSubtasks = holderSubTasksData.map((subtask, idx) =>
+                        idx === subTaskIndex ? { ...subtask, subtask: value } : subtask
+                    );
+                    return {
+                        ...prev,
+                        subtasks: updatedSubtasks
+                    };
                 }
 
-                return {
-                    ...prev,
-                    subtasks: holderSubTasksData
-                }
+                console.log(subTaskIndex);
+
+                return prev;
             } else {
                 return prev;
             }
@@ -85,10 +119,8 @@ export default function AddNewTask(){
     }
         
     const newSubTaskElements = newTaskData.subtasks
-        ? newTaskData.subtasks.map((data, index) => <NewSubTask newTask={newTaskData} subTaskIndex={index} handleChange={handleChange} />)
+        ? newTaskData.subtasks.map((_data, index) => <NewSubTask newTask={newTaskData} subTaskIndex={index} handleChange={handleChange} />)
         : <NewSubTask newTask={newTaskData} subTaskIndex={0} handleChange={handleChange} />;
-
-    console.log(newTaskData)
 
     const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -100,6 +132,22 @@ export default function AddNewTask(){
             textAreaContent.style.height = `${textAreaContent.scrollHeight}px`
         }
     }
+
+    const addCompletedNewTask = () => {
+        const filteredSubtasks = newTaskData.subtasks?.filter(
+            (subtask) => subtask.subtask.trim() !== ""
+        ) || [];
+
+        const updatedTask = {
+            ...newTaskData,
+            subtasks: filteredSubtasks,
+        };
+
+        setNewTaskData(updatedTask);
+        setTodos((prev) => [updatedTask, ...prev]);
+
+        console.log(updatedTask);
+    };
 
     
     return(
@@ -118,11 +166,11 @@ export default function AddNewTask(){
             {newSubTaskElements}
             <div className="absolute bottom-5 left-8 right-8">
                 <div className="">
-                    <label htmlFor="health" className="bg-[#E0E0E0]/40 px-1 py-0.5 m-2.5 rounded-md text-[#666666]/50 font-semibold text-sm"><input type="radio" className="appearance-none" name="category" id="health" onChange={handleChange}/>Health</label>
-                    <label htmlFor="health" className="bg-[#E0E0E0]/40 px-1 py-0.5 m-2.5 rounded-md text-[#666666]/50 font-semibold text-sm"><input type="radio" className="appearance-none" name="category" id="study" onChange={handleChange}/>Study</label>
-                    <label htmlFor="health" className="bg-[#E0E0E0]/40 px-1 py-0.5 m-2.5 rounded-md text-[#666666]/50 font-semibold text-sm"><input type="radio" className="appearance-none" name="category" id="Work" onChange={handleChange}/>Work</label>
+                    <label htmlFor="health" className={`bg-[${newTaskData.category === "health" ? "#7990F8" : "#E0E0E0"}] px-1 py-0.5 m-2.5 rounded-md text-[${newTaskData.category === "health" ? "#7990F8" : "#666666"}]/50 font-semibold text-sm`}><input type="radio" className="appearance-none" name="category" id="health" onChange={handleChange} value="health" checked={newTaskData.category === "health"} />Health</label>
+                    <label htmlFor="study" className={`bg-[${newTaskData.category === "study" ? "#7990F8" : "#E0E0E0"}] px-1 py-0.5 m-2.5 rounded-md text-[${newTaskData.category === "study" ? "#7990F8" : "#666666"}]/50 font-semibold text-sm`}><input type="radio" className="appearance-none" name="category" id="study" onChange={handleChange} value="study" checked={newTaskData.category === "study"} />Study</label>
+                    <label htmlFor="work" className={`bg-[${newTaskData.category === "work" ? "#7990F8" : "#E0E0E0"}] px-1 py-0.5 m-2.5 rounded-md text-[${newTaskData.category === "work" ? "bg-amber-400" : "#666666"}]/50 font-semibold text-sm`}><input type="radio" className="appearance-none" name="category" id="work" onChange={handleChange} value="work" checked={newTaskData.category === "work"} />Work</label>
                 </div>
-                <button type="button" className="w-full p-2.5 bg-[#393433] text-white text-lg font-medium rounded-xl">Save</button>
+                <button type="button" className="w-full p-2.5 bg-[#393433] text-white text-lg font-medium rounded-xl" onClick={addCompletedNewTask}>Save</button>
             </div>
         </section>
     )

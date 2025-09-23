@@ -41,9 +41,6 @@ function App() {
     setGroupItemsCount(counts);
   }, [todos])
 
-  console.log(groupItemsCount)
-
-
   useEffect(() => {
     localStorage.setItem("vptodos", JSON.stringify(todos))
   }, [todos])
@@ -60,7 +57,7 @@ function App() {
   
   return (
     <>
-      <AddNewTask />
+      <AddNewTask setTodos={setTodos} />
       <main className='p-8'>
           <h2 className="sticky top-0 z-50 bg-white text-4xl tracking-tight pb-6.5"><span className="font-bold">Today </span><span className="font-medium opacity-20">26 Dec</span> </h2>
           <section className='w-full my-4 grid grid-cols-2 gap-3 items-center'> 

@@ -35,53 +35,7 @@ const todoData : todoDataType[] = [
         subtasks: null,
         completed: false,
         timeDue: null
-    },
-    {
-        id: "4",
-        task: "Thank To Do List Creator",
-        category: "others",
-        subtasks: null,
-        completed: false,
-        timeDue: null
-    },
-    {
-        id: "5",
-        task: "Start A To Do List",
-        category: "study",
-        subtasks: [
-            {
-                subId: "5o1",
-                subtask: "Drink Water",
-                completed: false
-            },
-            {
-                subId: "5o2",
-                subtask: "Read a lot",
-                completed: true
-            }
-        ],
-        completed: false,
-        timeDue: "6:00 pm"
-    },
-    {
-        id: "6",
-        task: "Start A To Do List",
-        category: "study",
-        subtasks: [
-            {
-                subId: "6o1",
-                subtask: "Drink Water",
-                completed: false
-            },
-            {
-                subId: "6o2",
-                subtask: "Read a lot",
-                completed: true
-            }
-        ],
-        completed: false,
-        timeDue: "6:00 pm"
-    },
+    }
 ]
 
 export default todoData
