@@ -11,7 +11,7 @@ interface NewSubTaskProps {
 
 function NewSubTask({newTask, subTaskIndex, handleChange} : NewSubTaskProps){
     return (
-        <aside className="pl-7 grid grid-cols-[20px_1fr] gap-4.5 align-middle">
+        <aside className="pl-7 my-2 grid grid-cols-[20px_1fr] gap-4.5 align-middle">
             <span className="inline-block w-6 h-6 border-2 border-[#D6D6D6] rounded-sm"></span>
             <input type="text" name="subtask" id={newTask.subtasks?.[subTaskIndex]?.subId ?? ""} placeholder="Add Subtask" className="focus:outline-none" onChange={handleChange} value={newTask.subtasks?.[subTaskIndex]?.subtask ?? ""}/>
         </aside>
@@ -20,9 +20,10 @@ function NewSubTask({newTask, subTaskIndex, handleChange} : NewSubTaskProps){
 
 interface AddNewTaskProps{
     setTodos: React.Dispatch<React.SetStateAction<todoDataType[]>>
+    setNewTaskpageOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export default function AddNewTask({setTodos} : AddNewTaskProps){
+export default function AddNewTask({setTodos, setNewTaskpageOpen} : AddNewTaskProps){
     const initialId = `${Date.now()}vptask`;
     const [newTaskData, setNewTaskData] = useState<todoDataType>({
         id: initialId,
@@ -35,7 +36,11 @@ export default function AddNewTask({setTodos} : AddNewTaskProps){
 
     const ranOnce = useRef(false)
 
+    const [emptyTask, setEmptyTask] = useState<boolean>(true)
+    const [attemptedSubmission, setAttemptedSubmission] = useState<boolean>(false)
+
     useEffect(() => {
+        console.log(newTaskData)
         if (ranOnce.current){return} 
         
         ranOnce.current = true
@@ -84,6 +89,11 @@ export default function AddNewTask({setTodos} : AddNewTaskProps){
         const { name, value, tagName, id } = e.target;
         setNewTaskData(prev => {
             if (tagName === 'TEXTAREA') {
+                if (value !== ""){
+                    setEmptyTask(false)
+                }else{
+                    setEmptyTask(true)
+                }
                 return {
                     ...prev,
                     task: value
@@ -134,6 +144,14 @@ export default function AddNewTask({setTodos} : AddNewTaskProps){
     }
 
     const addCompletedNewTask = () => {
+        setAttemptedSubmission(true)
+        
+        if (emptyTask){
+            return
+        }
+
+        setNewTaskpageOpen(false)
+
         const filteredSubtasks = newTaskData.subtasks?.filter(
             (subtask) => subtask.subtask.trim() !== ""
         ) || [];
@@ -149,26 +167,89 @@ export default function AddNewTask({setTodos} : AddNewTaskProps){
         console.log(updatedTask);
     };
 
+    const closeNewTaskPage = () => {
+        setNewTaskpageOpen(false)
+    }
+
     
     return(
-        <section className="relative h-[100vh] p-8">
-            <button type="button" className="absolute right-7 top-5"><img src={closeIcon} alt="close" /></button>
-            <textarea
-                ref = {textareaRef}
-                onInput={handleInput} 
-                name="" 
-                id="" 
-                placeholder="Write a New Task..."
-                className="mb-2 resize-none overflow-hidden mt-15 w-full h-fit font-medium text-4xl tracking-tight placeholder-black/50 placeholder-opacity-50 focus:outline-none"
-                rows={1}
-                onChange={handleChange}
-            ></textarea>
-            {newSubTaskElements}
+       <section className="z-[10000] bg-white top-0 left-0 w-full h-screen new-task-page-overflow"> 
+            <div className="inner-new-task">
+                <button type="button" className="absolute right-7 top-5" onClick={closeNewTaskPage}><img src={closeIcon} alt="close"/></button>
+                <textarea
+                    ref = {textareaRef}
+                    onInput={handleInput} 
+                    name="" 
+                    id="" 
+                    placeholder="Write a New Task..."
+                    className="mb-2 resize-none overflow-hidden mt-15 w-full h-fit font-medium text-4xl tracking-tight placeholder-black/50 placeholder-opacity-50 focus:outline-none"
+                    rows={1}
+                    onChange={handleChange}
+                ></textarea>
+                <p className={`text-red-600 ${(emptyTask && attemptedSubmission) ? "block" : "hidden"}`}>Each todo must atleast have a title. Enter title above</p>
+                    {newSubTaskElements}
+            </div>
             <div className="absolute bottom-5 left-8 right-8">
-                <div className="">
-                    <label htmlFor="health" className={`bg-[${newTaskData.category === "health" ? "#7990F8" : "#E0E0E0"}] px-1 py-0.5 m-2.5 rounded-md text-[${newTaskData.category === "health" ? "#7990F8" : "#666666"}]/50 font-semibold text-sm`}><input type="radio" className="appearance-none" name="category" id="health" onChange={handleChange} value="health" checked={newTaskData.category === "health"} />Health</label>
-                    <label htmlFor="study" className={`bg-[${newTaskData.category === "study" ? "#7990F8" : "#E0E0E0"}] px-1 py-0.5 m-2.5 rounded-md text-[${newTaskData.category === "study" ? "#7990F8" : "#666666"}]/50 font-semibold text-sm`}><input type="radio" className="appearance-none" name="category" id="study" onChange={handleChange} value="study" checked={newTaskData.category === "study"} />Study</label>
-                    <label htmlFor="work" className={`bg-[${newTaskData.category === "work" ? "#7990F8" : "#E0E0E0"}] px-1 py-0.5 m-2.5 rounded-md text-[${newTaskData.category === "work" ? "bg-amber-400" : "#666666"}]/50 font-semibold text-sm`}><input type="radio" className="appearance-none" name="category" id="work" onChange={handleChange} value="work" checked={newTaskData.category === "work"} />Work</label>
+                <div className="mb-2">
+                    {/* Health */}
+                    <label
+                    htmlFor="health"
+                    className={`
+                        ${newTaskData.category === "health" ? "bg-blue-500/50" : "bg-gray-200/50"}
+                        px-1 py-0.5 m-2.5 rounded-md font-semibold text-sm
+                    `}
+                    >
+                    <input
+                        type="radio"
+                        className="appearance-none"
+                        name="category"
+                        id="health"
+                        onChange={handleChange}
+                        value="health"
+                        checked={newTaskData.category === "health"}
+                    />
+                    Health
+                    </label>
+
+                    {/* Study */}
+                    <label
+                    htmlFor="study"
+                    className={`
+                        ${newTaskData.category === "study" ? "bg-green-500/50" : "bg-gray-200/50"}
+                        px-1 py-0.5 m-2.5 rounded-md font-semibold text-sm
+                    `}
+                    >
+                    <input
+                        type="radio"
+                        className="appearance-none"
+                        name="category"
+                        id="study"
+                        onChange={handleChange}
+                        value="study"
+                        checked={newTaskData.category === "study"}
+                    />
+                    Study
+                    </label>
+
+                    {/* Work */}
+                    <label
+                    htmlFor="work"
+                    className={`
+                        ${newTaskData.category === "work" ? "bg-red-500/50" : "bg-gray-200/50"}
+                        px-1 py-0.5 m-2.5 rounded-md font-semibold text-sm
+                    `}
+                    >
+                    <input
+                        type="radio"
+                        className="appearance-none"
+                        name="category"
+                        id="work"
+                        onChange={handleChange}
+                        value="work"
+                        checked={newTaskData.category === "work"}
+                    />
+                    Work
+                    </label>
                 </div>
                 <button type="button" className="w-full p-2.5 bg-[#393433] text-white text-lg font-medium rounded-xl" onClick={addCompletedNewTask}>Save</button>
             </div>

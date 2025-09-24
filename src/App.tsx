@@ -26,6 +26,8 @@ function App() {
     "others": 0
   })
 
+  const [newTaskpageOpen, setNewTaskpageOpen] = useState<boolean>(false)
+
   useEffect(() => {
     const counts: groupItems = {
       "health": 0,
@@ -54,11 +56,17 @@ function App() {
   }, [todos])
 
   const todoElements = displayedTodos.map(todo => <TaskComponent todo={todo} todos={todos} setTodos={setTodos} />)
+
+  const openNewTaskPage = () => {
+    setNewTaskpageOpen(true)
+  }
   
   return (
     <>
-      <AddNewTask setTodos={setTodos} />
-      <main className='p-8'>
+      {newTaskpageOpen && <AddNewTask setTodos={setTodos} setNewTaskpageOpen={setNewTaskpageOpen} />}
+      {
+        !newTaskpageOpen &&
+        <main className='p-8'>
           <h2 className="sticky top-0 z-50 bg-white text-4xl tracking-tight pb-6.5"><span className="font-bold">Today </span><span className="font-medium opacity-20">26 Dec</span> </h2>
           <section className='w-full my-4 grid grid-cols-2 gap-3 items-center'> 
             <div className="w-full p-3 rounded-xl bg-[#7990F8]/10">
@@ -81,10 +89,11 @@ function App() {
           <section>
             {todoElements}
           </section>
-          <button className="fixed right-6 bottom-6 px-[21px] py[14px] w-[60px] h-[60px] bg-[#393433] rounded-xl">
+          <button className="fixed right-6 bottom-6 px-[21px] py[14px] w-[60px] h-[60px] bg-[#393433] rounded-xl" onClick={openNewTaskPage}>
             <img src={addTask} alt="Add task" />
           </button>
-      </main>
+        </main>
+      }
     </>
   )
 }

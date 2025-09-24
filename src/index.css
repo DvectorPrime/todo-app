@@ -8,3 +8,14 @@ body{
 .bg-checked:checked{
     background-image: url("./assets/checked.png");
 }
+
+.new-task-page-overflow{
+    width: 100vw;
+    height: calc(100vh - 30px);
+    padding: 0px 24px 100px 24px;
+}
+
+.inner-new-task{
+    height: 100%;
+    overflow: scroll;
+}
