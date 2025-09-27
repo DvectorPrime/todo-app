@@ -9,7 +9,6 @@ export interface todoDataType {
     category: "work" | "study" | "health" | "others"
     subtasks: subtaskType[] | null
     completed: boolean,
-    timeDue: string | null
 }
 
 export interface groupItems {

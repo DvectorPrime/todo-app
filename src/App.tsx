@@ -101,7 +101,7 @@ function App() {
           <section>
             {todoElements}
           </section>
-          <button className="fixed right-6 bottom-6 px-[21px] py[14px] w-[60px] h-[60px] bg-[#393433] rounded-xl" onClick={openNewTaskPage}>
+          <button className="fixed right-6 bottom-6 px-[21px] py[14px] w-[60px] h-[60px] bg-[#393433] rounded-xl cursor-pointer" onClick={openNewTaskPage}>
             <img src={addTask} alt="Add task" />
           </button>
         </main>

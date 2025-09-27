@@ -31,7 +31,6 @@ export default function AddNewTask({setTodos, setNewTaskpageOpen} : AddNewTaskPr
         category: "others",
         subtasks: [],
         completed: false,
-        timeDue: null
     })
 
     const ranOnce = useRef(false)
@@ -175,7 +174,7 @@ export default function AddNewTask({setTodos, setNewTaskpageOpen} : AddNewTaskPr
     return(
        <section className="z-[10000] bg-white top-0 left-0 w-full h-screen new-task-page-overflow"> 
             <div className="inner-new-task">
-                <button type="button" className="absolute right-7 top-5" onClick={closeNewTaskPage}><img src={closeIcon} alt="close"/></button>
+                <button type="button" className="absolute right-7 top-5 cursor-pointer" onClick={closeNewTaskPage}><img src={closeIcon} alt="close"/></button>
                 <textarea
                     ref = {textareaRef}
                     onInput={handleInput} 
@@ -196,7 +195,7 @@ export default function AddNewTask({setTodos, setNewTaskpageOpen} : AddNewTaskPr
                     htmlFor="health"
                     className={`
                         ${newTaskData.category === "health" ? "bg-blue-500/50" : "bg-gray-200/50"}
-                        px-1 py-0.5 m-2.5 rounded-md font-semibold text-sm
+                        px-1 py-0.5 m-2.5 rounded-md font-semibold text-sm cursor-pointer
                     `}
                     >
                     <input
@@ -216,7 +215,7 @@ export default function AddNewTask({setTodos, setNewTaskpageOpen} : AddNewTaskPr
                     htmlFor="study"
                     className={`
                         ${newTaskData.category === "study" ? "bg-green-500/50" : "bg-gray-200/50"}
-                        px-1 py-0.5 m-2.5 rounded-md font-semibold text-sm
+                        px-1 py-0.5 m-2.5 rounded-md font-semibold text-sm cursor-pointer
                     `}
                     >
                     <input
@@ -236,7 +235,7 @@ export default function AddNewTask({setTodos, setNewTaskpageOpen} : AddNewTaskPr
                     htmlFor="work"
                     className={`
                         ${newTaskData.category === "work" ? "bg-red-500/50" : "bg-gray-200/50"}
-                        px-1 py-0.5 m-2.5 rounded-md font-semibold text-sm
+                        px-1 py-0.5 m-2.5 rounded-md font-semibold text-sm cursor-pointer
                     `}
                     >
                     <input
@@ -251,7 +250,7 @@ export default function AddNewTask({setTodos, setNewTaskpageOpen} : AddNewTaskPr
                     Work
                     </label>
                 </div>
-                <button type="button" className="w-full p-2.5 bg-[#393433] text-white text-lg font-medium rounded-xl" onClick={addCompletedNewTask}>Save</button>
+                <button type="button" className="w-full p-2.5 bg-[#393433] text-white text-lg font-medium rounded-xl cursor-pointer" onClick={addCompletedNewTask}>Save</button>
             </div>
         </section>
     )

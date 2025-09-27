@@ -7,7 +7,6 @@ const todoData : todoDataType[] = [
         category: "work",
         subtasks: null,
         completed: true,
-        timeDue: "3:30 pm"
     },
     {
         id: "2",
@@ -26,7 +25,6 @@ const todoData : todoDataType[] = [
             }
         ],
         completed: false,
-        timeDue: "6:00 pm"
     },
     {
         id: "3",
@@ -34,7 +32,6 @@ const todoData : todoDataType[] = [
         category: "health",
         subtasks: null,
         completed: false,
-        timeDue: null
     }
 ]
 
