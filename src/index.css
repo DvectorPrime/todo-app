@@ -17,5 +17,5 @@ body{
 
 .inner-new-task{
     height: 100%;
-    overflow: scroll;
+    overflow: auto;
 }

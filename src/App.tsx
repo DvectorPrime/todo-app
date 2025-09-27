@@ -28,6 +28,18 @@ function App() {
 
   const [newTaskpageOpen, setNewTaskpageOpen] = useState<boolean>(false)
 
+  const today : Date = new Date();
+  const monthNames : string[] = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ];
+
+  const day: number = today.getDate()
+
+  const month: string = monthNames[today.getMonth()]
+
+  const formatted_date : string = `${day} ${month}`
+
   useEffect(() => {
     const counts: groupItems = {
       "health": 0,
@@ -60,14 +72,14 @@ function App() {
   const openNewTaskPage = () => {
     setNewTaskpageOpen(true)
   }
-  
+
   return (
     <>
       {newTaskpageOpen && <AddNewTask setTodos={setTodos} setNewTaskpageOpen={setNewTaskpageOpen} />}
       {
         !newTaskpageOpen &&
         <main className='p-8'>
-          <h2 className="sticky top-0 z-50 bg-white text-4xl tracking-tight pb-6.5"><span className="font-bold">Today </span><span className="font-medium opacity-20">26 Dec</span> </h2>
+          <h2 className="sticky top-0 z-50 bg-white text-4xl tracking-tight pb-6.5"><span className="font-bold">Today </span><span className="font-medium opacity-20">{formatted_date}</span> </h2>
           <section className='w-full my-4 grid grid-cols-2 gap-3 items-center'> 
             <div className="w-full p-3 rounded-xl bg-[#7990F8]/10">
               <img className="mb-4 w-6" src={healthIcon}/>
