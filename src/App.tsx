@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 
 import todoData from "./appData/todoData"
 import healthIcon from "./assets/health.svg"
@@ -12,7 +13,68 @@ import AddNewTask from "./components/NewTaskComponent"
 
 import type { groupItems, todoDataType } from "./appData/types/todoDataTypes"
 
+interface HomePageProps{
+  todos:  todoDataType[]
+  setTodos: React.Dispatch<React.SetStateAction<todoDataType[]>>
+  groupItemsCount: groupItems
+}
 
+function HomePage({todos, setTodos, groupItemsCount} : HomePageProps){
+  const today : Date = new Date();
+  const monthNames : string[] = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ];
+
+  const day: number = today.getDate()
+
+  const month: string = monthNames[today.getMonth()]
+
+  const formatted_date : string = `${day} ${month}`
+
+  const [displayedTodos, setDisplayedTodos] = useState<todoDataType[]>(todos)
+
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const holderTodos = todos.sort((a, b) => Number(a.completed) - Number(b.completed))
+
+    setDisplayedTodos(holderTodos)
+  }, [todos])
+
+  const todoElements = displayedTodos.map(todo => <TaskComponent todo={todo} todos={todos} setTodos={setTodos} />)
+
+  return(
+    <main className='p-8'>
+        <h2 className="sticky top-0 z-50 bg-white text-4xl tracking-tight pb-6.5"><span className="font-bold">Today </span><span className="font-medium opacity-20">{formatted_date}</span> </h2>
+        <section className='w-full my-4 grid grid-cols-2 gap-3 items-center'> 
+          <div className="w-full p-3 rounded-xl bg-[#7990F8]/10">
+            <img className="mb-4 w-6" src={healthIcon}/>
+            <p className="text-[17px] text-[#121212]"><span className="font-bold">{groupItemsCount.health} </span><span className="font-medium opacity-50">Health</span></p>
+          </div>
+           <div className="w-full p-3 rounded-xl bg-[#46CF8B]/10">
+            <img className="mb-4 w-6" src={studyIcon}/>
+            <p className="text-[17px] text-[#121212]"><span className="font-bold">{groupItemsCount.study} </span><span className="font-medium opacity-50">Study</span></p>
+          </div>
+           <div className="w-full p-3 rounded-xl bg-[#BC5EAD]/10">
+            <img className="mb-4 w-6" src={workIcon} />
+            <p className="text-[17px] text-[#121212]"><span className="font-bold">{groupItemsCount.work} </span><span className="font-medium opacity-50">Work</span></p>
+          </div>
+          <div className="w-full p-3 rounded-xl bg-[#908986]/10">
+            <img className="mb-4 w-6" src={othersIcon} />
+            <p className="text-[17px] text-[#121212]"><span className="font-bold">{groupItemsCount.others} </span><span className="font-medium opacity-50">Others</span></p>
+          </div>
+        </section>
+        <section>
+          {todoElements}
+        </section>
+        <button className="fixed right-6 bottom-6 px-[21px] py[14px] flex items-center gap-3 w-fit h-[60px] bg-[#393433] rounded-xl cursor-pointer" onClick={() => navigate("/new-task")}>
+          <img src={addTask} alt="Add task" />
+           <span className="hidden md:inline text-white text-lg font-medium">ADD NEW TASK</span>
+        </button>
+     </main>
+  )
+}
 
 function App() {
   const todosStrings : string | null = localStorage.getItem("vptodos")
@@ -25,20 +87,6 @@ function App() {
     "work": 0,
     "others": 0
   })
-
-  const [newTaskpageOpen, setNewTaskpageOpen] = useState<boolean>(false)
-
-  const today : Date = new Date();
-  const monthNames : string[] = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-  ];
-
-  const day: number = today.getDate()
-
-  const month: string = monthNames[today.getMonth()]
-
-  const formatted_date : string = `${day} ${month}`
 
   useEffect(() => {
     const counts: groupItems = {
@@ -59,53 +107,14 @@ function App() {
     localStorage.setItem("vptodos", JSON.stringify(todos))
   }, [todos])
 
-  const [displayedTodos, setDisplayedTodos] = useState<todoDataType[]>(todos)
-
-  useEffect(() => {
-    const holderTodos = todos.sort((a, b) => Number(a.completed) - Number(b.completed))
-
-    setDisplayedTodos(holderTodos)
-  }, [todos])
-
-  const todoElements = displayedTodos.map(todo => <TaskComponent todo={todo} todos={todos} setTodos={setTodos} />)
-
-  const openNewTaskPage = () => {
-    setNewTaskpageOpen(true)
-  }
-
   return (
     <>
-      {newTaskpageOpen && <AddNewTask setTodos={setTodos} setNewTaskpageOpen={setNewTaskpageOpen} />}
-      {
-        !newTaskpageOpen &&
-        <main className='p-8'>
-          <h2 className="sticky top-0 z-50 bg-white text-4xl tracking-tight pb-6.5"><span className="font-bold">Today </span><span className="font-medium opacity-20">{formatted_date}</span> </h2>
-          <section className='w-full my-4 grid grid-cols-2 gap-3 items-center'> 
-            <div className="w-full p-3 rounded-xl bg-[#7990F8]/10">
-              <img className="mb-4 w-6" src={healthIcon}/>
-              <p className="text-[17px] text-[#121212]"><span className="font-bold">{groupItemsCount.health} </span><span className="font-medium opacity-50">Health</span></p>
-            </div>
-             <div className="w-full p-3 rounded-xl bg-[#46CF8B]/10">
-              <img className="mb-4 w-6" src={studyIcon}/>
-              <p className="text-[17px] text-[#121212]"><span className="font-bold">{groupItemsCount.study} </span><span className="font-medium opacity-50">Study</span></p>
-            </div>
-             <div className="w-full p-3 rounded-xl bg-[#BC5EAD]/10">
-              <img className="mb-4 w-6" src={workIcon} />
-              <p className="text-[17px] text-[#121212]"><span className="font-bold">{groupItemsCount.work} </span><span className="font-medium opacity-50">Work</span></p>
-            </div>
-             <div className="w-full p-3 rounded-xl bg-[#908986]/10">
-              <img className="mb-4 w-6" src={othersIcon} />
-              <p className="text-[17px] text-[#121212]"><span className="font-bold">{groupItemsCount.others} </span><span className="font-medium opacity-50">Others</span></p>
-            </div>
-          </section>
-          <section>
-            {todoElements}
-          </section>
-          <button className="fixed right-6 bottom-6 px-[21px] py[14px] w-[60px] h-[60px] bg-[#393433] rounded-xl cursor-pointer" onClick={openNewTaskPage}>
-            <img src={addTask} alt="Add task" />
-          </button>
-        </main>
-      }
+      <Router>
+        <Routes>
+          <Route path="/" element={<HomePage todos={todos} setTodos={setTodos} groupItemsCount={groupItemsCount} />} />
+          <Route path="new-task" element={<AddNewTask setTodos={setTodos} />} />
+        </Routes>
+      </Router>
     </>
   )
 }

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import closeIcon from "../assets/x-close.svg"
 import type { todoDataType } from "../appData/types/todoDataTypes"
 
@@ -20,10 +21,9 @@ function NewSubTask({newTask, subTaskIndex, handleChange} : NewSubTaskProps){
 
 interface AddNewTaskProps{
     setTodos: React.Dispatch<React.SetStateAction<todoDataType[]>>
-    setNewTaskpageOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export default function AddNewTask({setTodos, setNewTaskpageOpen} : AddNewTaskProps){
+export default function AddNewTask({setTodos} : AddNewTaskProps){
     const initialId = `${Date.now()}vptask`;
     const [newTaskData, setNewTaskData] = useState<todoDataType>({
         id: initialId,
@@ -37,6 +37,8 @@ export default function AddNewTask({setTodos, setNewTaskpageOpen} : AddNewTaskPr
 
     const [emptyTask, setEmptyTask] = useState<boolean>(true)
     const [attemptedSubmission, setAttemptedSubmission] = useState<boolean>(false)
+
+    const navigate = useNavigate()
 
     useEffect(() => {
         console.log(newTaskData)
@@ -149,7 +151,7 @@ export default function AddNewTask({setTodos, setNewTaskpageOpen} : AddNewTaskPr
             return
         }
 
-        setNewTaskpageOpen(false)
+        navigate("/")
 
         const filteredSubtasks = newTaskData.subtasks?.filter(
             (subtask) => subtask.subtask.trim() !== ""
@@ -165,16 +167,11 @@ export default function AddNewTask({setTodos, setNewTaskpageOpen} : AddNewTaskPr
 
         console.log(updatedTask);
     };
-
-    const closeNewTaskPage = () => {
-        setNewTaskpageOpen(false)
-    }
-
     
     return(
        <section className="z-[10000] bg-white top-0 left-0 w-full h-screen new-task-page-overflow"> 
             <div className="inner-new-task">
-                <button type="button" className="absolute right-7 top-5 cursor-pointer" onClick={closeNewTaskPage}><img src={closeIcon} alt="close"/></button>
+                <button type="button" className="absolute right-7 top-5 cursor-pointer" onClick={() => {navigate("/")}}><img src={closeIcon} alt="close"/></button>
                 <textarea
                     ref = {textareaRef}
                     onInput={handleInput} 
